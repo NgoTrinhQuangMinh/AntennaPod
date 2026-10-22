@@ -12,6 +12,7 @@ import java.util.List;
 
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.storage.database.PodDBAdapter;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import static org.junit.Assert.assertFalse;
@@ -87,5 +88,24 @@ public class ExceptFavoriteCleanupAlgorithmTest extends DbCleanupTests {
     @Override
     public void testPerformAutoCleanupShouldNotDeleteBecauseInQueue_withFeedsWithNoMedia() throws IOException {
         // Yes it should
+    }
+
+    @Test
+    public void testPerformAutoCleanupFavoritesDoNotCountTowardsLimit() throws IOException {
+        Feed feed = new Feed("url", null, "title");
+        List<FeedItem> items = new ArrayList<>();
+        feed.setItems(items);
+        List<File> files = new ArrayList<>();
+        populateItems(numberOfItems, feed, items, files, FeedItem.UNPLAYED, false, false);
+
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        adapter.setFavorites(items.subList(EPISODE_CACHE_SIZE, items.size()));
+        adapter.close();
+
+        AutoDownloadManager.getInstance().performAutoCleanup(context);
+        for (int i = 0; i < files.size(); i++) {
+            assertTrue("Favorites should not count towards the episode limit", files.get(i).exists());
+        }
     }
 }
