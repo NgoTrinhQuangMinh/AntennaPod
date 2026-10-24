@@ -78,7 +78,8 @@ public class AutomaticDownloadAlgorithm {
                 }
 
                 int autoDownloadableEpisodes = candidates.size();
-                int downloadedEpisodes = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED));
+                int downloadedEpisodes = DBReader.getTotalEpisodeCount(
+                        new FeedItemFilter(FeedItemFilter.DOWNLOADED, FeedItemFilter.NOT_FAVORITE));
                 downloadedEpisodes += DownloadServiceInterface.get().getNumberOfActiveDownloads(context);
                 int deletedEpisodes = EpisodeCleanupAlgorithmFactory.build()
                         .makeRoomForEpisodes(context, autoDownloadableEpisodes);

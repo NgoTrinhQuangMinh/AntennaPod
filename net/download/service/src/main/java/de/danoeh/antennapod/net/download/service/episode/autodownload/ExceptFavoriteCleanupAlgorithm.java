@@ -95,7 +95,8 @@ public class ExceptFavoriteCleanupAlgorithm extends EpisodeCleanupAlgorithm {
     public int getDefaultCleanupParameter() {
         int cacheSize = UserPreferences.getEpisodeCacheSize();
         if (cacheSize != UserPreferences.EPISODE_CACHE_SIZE_UNLIMITED) {
-            int downloadedEpisodes = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED));
+            int downloadedEpisodes = DBReader.getTotalEpisodeCount(
+                    new FeedItemFilter(FeedItemFilter.DOWNLOADED, FeedItemFilter.NOT_FAVORITE));
             if (downloadedEpisodes > cacheSize) {
                 return downloadedEpisodes - cacheSize;
             }
